@@ -11,10 +11,15 @@ class TimeTile {
 
   String first;
   String second;
-  TimeTile({ required this.first, required this.second });
+  String third;
+  TimeTile({ required this.first, required this.third ,required this.second });
 }
 
-List<TimeTile> history = [];
+List<TimeTile> history = [
+  TimeTile(first: "From" ,
+      second: "To",
+      third:"Consumption")
+];
 
 void main() => runApp(MyApp());
 
@@ -51,10 +56,10 @@ class _MyHomePageState extends State<MyHomePage> {
   String first = "";
   bool disconnected = true;
   bool both = false;
-  final databaseRef = FirebaseDatabase.instance.reference().child("project-1-fda8c-default-rtdb"); //database reference object
+  final databaseRef = FirebaseDatabase.instance.reference(); //database reference object
 
   addData(bool data) {
-    databaseRef.set({'S1': data});
+    databaseRef.update({'S1': data});
   }
 
   void fetch() {
@@ -89,6 +94,7 @@ class _MyHomePageState extends State<MyHomePage> {
      localNotification.initialize(initialzationSettings);
 
 databaseRef.onValue.listen((event) {
+<<<<<<< HEAD
   if(event.snapshot.value["S1"] == true){
 
     // calling the notification function
@@ -98,10 +104,23 @@ databaseRef.onValue.listen((event) {
     both = true;
     first =  DateFormat('yyyy-MM-dd \n kk:mm:ss').format(DateTime.now()).toString();
 
+=======
+  if(event.snapshot.value["S1"] == true ){
+    both = true;
+    first =  DateFormat('yyyy-MM-dd \n kk:mm:ss').format(DateTime.now()).toString();
+    setState(() {
+      disconnected = false;
+    });
+>>>>>>> 6d73cdc1f24a0d3128315e6889fc75b5324582f1
   }
   else if(event.snapshot.value["S1"] == false && both == true){
-    history.add(TimeTile(first: first , second: DateFormat('yyyy-MM-dd \n kk:mm:ss').format(DateTime.now()).toString()));
-    setState(() {});
+    both = false;
+    history.add(TimeTile(first: first ,
+        second: DateFormat('yyyy-MM-dd \n kk:mm:ss').format(DateTime.now()).toString(),
+        third:event.snapshot.value["reading"]));
+    setState(() {
+      disconnected = true;
+    });
   }
 });
 
@@ -151,15 +170,9 @@ databaseRef.onValue.listen((event) {
                 onTap: () {
                   if (disconnected == false) {
                     addData(false);
-                    setState(() {
-                      disconnected = true;
-                    });
                   }
                   else {
                     addData(true);
-                    setState(() {
-                      disconnected = false;
-                    });
                   }
                   /*
                   setState(() {
@@ -210,10 +223,16 @@ databaseRef.onValue.listen((event) {
                 return ListTile(leading: Text(history[index].first,
                 style: TextStyle(
                   color: Colors.white
-                ),), trailing:Text(history[index].second,
+                ),),title: Center(
+                  child: Text(history[index].third,
+                  style: TextStyle(
+                    color: Colors.white
+                  ),),
+                )
+                  ,trailing:Text(history[index].second,
                 style: TextStyle(
                   color: Colors.white
-                ),)  ,);
+                ),)  , );
               },
               itemCount:history.length ,
             )
@@ -258,7 +277,7 @@ Widget upperCurvedContainer(BuildContext context) {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           _topRow(),
-          SizedBox(height: 20),
+          SizedBox(height: 50),
           Text('Project Name', style: vpnStyle),
         ],
       ),
@@ -279,29 +298,19 @@ Widget _topRow() {
         ),
         child: Row(
           children: <Widget>[
+            Icon(
+              Icons.tune,
+              size: 26,
+              color: Colors.white,
+            ),
             SizedBox(width: 12),
             Text(
-              'Text here',
+              'Menu',
               style: TextStyle(color: Colors.white),
             )
           ],
         ),
       ),
-      Container(
-        height: 50,
-        width: 50,
-        decoration: BoxDecoration(
-          color: bgColor,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Center(
-          child: Icon(
-            Icons.tune,
-            size: 26,
-            color: Colors.white,
-          ),
-        ),
-      )
     ],
   );
 }
