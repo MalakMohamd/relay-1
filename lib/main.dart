@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:try1/utils.dart';
 import 'custom_clipper.dart';
 import 'package:avatar_glow/avatar_glow.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:intl/intl.dart';
+
 
 class TimeTile {
 
@@ -39,6 +41,12 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
+ 
+  // Notification System 
+  // Local Notification Object
+
+  late FlutterLocalNotificationsPlugin localNotification;
+
 
   String first = "";
   bool disconnected = true;
@@ -62,10 +70,34 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     // TODO: implement initState
     super.initState();
+
+// android settings initialiizer 
+     var androidIntialize = new AndroidInitializationSettings("ic_launcher");
+
+     // IOS settings Initializer
+
+     var iOSIntialize = new IOSInitializationSettings();
+     //Initilization Settings
+
+     var initialzationSettings = new InitializationSettings(
+       android: androidIntialize , iOS: iOSIntialize
+     );
+
+     // setting up local notification
+
+     localNotification = new FlutterLocalNotificationsPlugin();
+     localNotification.initialize(initialzationSettings);
+
 databaseRef.onValue.listen((event) {
   if(event.snapshot.value["S1"] == true){
+
+    // calling the notification function
+
+    _shownotification();
+
     both = true;
     first =  DateFormat('yyyy-MM-dd \n kk:mm:ss').format(DateTime.now()).toString();
+
   }
   else if(event.snapshot.value["S1"] == false && both == true){
     history.add(TimeTile(first: first , second: DateFormat('yyyy-MM-dd \n kk:mm:ss').format(DateTime.now()).toString()));
@@ -77,6 +109,19 @@ databaseRef.onValue.listen((event) {
       fetch();
     });
 */
+  }
+
+  // Notification function
+ Future _shownotification() async {
+    var androidDetails = new AndroidNotificationDetails("channelId", "Notifier", importance: Importance.high);
+
+    var iosDetails = new IOSNotificationDetails();
+
+    var generalNotificationDetails = new NotificationDetails(android : androidDetails , iOS: iosDetails);
+    
+
+    await localNotification.show(0 , "Connected to alternative source", "body", generalNotificationDetails);
+
   }
 
   @override
