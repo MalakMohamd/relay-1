@@ -51,7 +51,6 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
-<<<<<<< HEAD
   late Timer _timer;
   int seconds = 0;
   void startTimer() {
@@ -70,17 +69,11 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-=======
- 
->>>>>>> 35a2815c13f4aae40aedc7903af5167fcd89c92b
   // Notification System 
   // Local Notification Object
 
   late FlutterLocalNotificationsPlugin localNotification;
-<<<<<<< HEAD
-=======
 
->>>>>>> 35a2815c13f4aae40aedc7903af5167fcd89c92b
 
   double cons = 0;
   String first = "";
@@ -92,14 +85,6 @@ class _MyHomePageState extends State<MyHomePage> {
     databaseRef.update({'S1': data});
   }
 
-  void fetch() {
-    databaseRef.once().then((DataSnapshot snapshot)  {
-      // disconnected = snapshot.value["S1"];
-      setState(() {
-
-      });
-    });
-  }
 
   @override
   void initState() {
@@ -124,15 +109,14 @@ class _MyHomePageState extends State<MyHomePage> {
      localNotification.initialize(initialzationSettings);
 
 databaseRef.onValue.listen((event) {
-<<<<<<< HEAD
+
   if(event.snapshot.value["S1"] == true) {
     // calling the notification function
     startTimer();
     if(both == false) {
       _shownotification();
     }
-=======
-<<<<<<< HEAD
+
   if(event.snapshot.value["S1"] == true){
 
     // calling the notification function
@@ -142,16 +126,14 @@ databaseRef.onValue.listen((event) {
     both = true;
     first =  DateFormat('yyyy-MM-dd \n kk:mm:ss').format(DateTime.now()).toString();
 
-=======
   if(event.snapshot.value["S1"] == true ){
->>>>>>> 35a2815c13f4aae40aedc7903af5167fcd89c92b
+
     both = true;
     first =
         DateFormat('yyyy-MM-dd \n kk:mm:ss').format(DateTime.now()).toString();
     setState(() {
       disconnected = false;
     });
->>>>>>> 6d73cdc1f24a0d3128315e6889fc75b5324582f1
   }
     else if (event.snapshot.value["S1"] == false && both == true) {
       both = false;
@@ -167,12 +149,8 @@ databaseRef.onValue.listen((event) {
         seconds=0;
       });
     }
-  });
+  }}});
 
-    /*Timer.periodic(Duration(seconds: 2), (timer) {
-      fetch();
-    });
-*/
   }
 
   // Notification function
@@ -184,11 +162,10 @@ databaseRef.onValue.listen((event) {
     var generalNotificationDetails = new NotificationDetails(android : androidDetails , iOS: iosDetails);
     
 
-<<<<<<< HEAD
+
     await localNotification.show(0 , "Connected", "Connected to alternative source", generalNotificationDetails);
-=======
     await localNotification.show(0 , "Connected to alternative source", "body", generalNotificationDetails);
->>>>>>> 35a2815c13f4aae40aedc7903af5167fcd89c92b
+
 
   }
 
@@ -264,29 +241,7 @@ databaseRef.onValue.listen((event) {
                 ),)  , );
               },
               itemCount:history.length ,
-            )
-        /*StreamBuilder(
-          stream: databaseRef.onValue,
-          builder: (BuildContext context, snapshot) {
-            if (snapshot.hasData) {
-              databaseRef.once().then((DataSnapshot snapshot)  {
-                // disconnected = snapshot.value["S1"];
-                if(snapshot.value["S1"] == true){
-                  print(snapshot.value);
-                }
-                setState(() {
-                  disconnected = S1 ;
-                });
-              });
-              return Text("$snapshot");
-            }
-            else if (snapshot.hasError) {
-              return Text("Error");
-            }
-            else {
-              return Text("DATA");
-            }
-          })*/],
+            )],
         ));
   }
 }
