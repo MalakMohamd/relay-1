@@ -65,7 +65,11 @@ packages:
       name: cupertino_icons
       url: "https://pub.dartlang.org"
     source: hosted
+<<<<<<< HEAD
     version: "1.0.4"
+=======
+    version: "1.0.3"
+>>>>>>> 35a2815c13f4aae40aedc7903af5167fcd89c92b
   dbus:
     dependency: transitive
     description:
@@ -302,7 +306,11 @@ packages:
       name: test_api
       url: "https://pub.dartlang.org"
     source: hosted
+<<<<<<< HEAD
     version: "0.4.8"
+=======
+    version: "0.4.2"
+>>>>>>> 35a2815c13f4aae40aedc7903af5167fcd89c92b
   timezone:
     dependency: transitive
     description:
@@ -323,7 +331,11 @@ packages:
       name: vector_math
       url: "https://pub.dartlang.org"
     source: hosted
+<<<<<<< HEAD
     version: "2.1.1"
+=======
+    version: "2.1.0"
+>>>>>>> 35a2815c13f4aae40aedc7903af5167fcd89c92b
   xdg_directories:
     dependency: transitive
     description:
