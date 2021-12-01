@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:try1/utils.dart';
 import 'custom_clipper.dart';
 import 'package:avatar_glow/avatar_glow.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:intl/intl.dart';
+import 'dart:async';
+
 
 class TimeTile {
 
@@ -38,13 +41,39 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
+
+
+
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
 
+  late Timer _timer;
+  int seconds = 0;
+  void startTimer() {
+    const oneSec = const Duration(seconds: 1);
+    _timer = new Timer.periodic(
+      oneSec,
+          (Timer timer) => setState(
+            () {
+          if (seconds < 0) {
+            timer.cancel();
+          } else {
+            seconds = seconds + 1;
+          }
+        },
+      ),
+    );
+  }
 
+  // Notification System 
+  // Local Notification Object
+
+  late FlutterLocalNotificationsPlugin localNotification;
+
+  double cons = 0;
   String first = "";
   bool disconnected = true;
   bool both = false;
@@ -67,29 +96,71 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     // TODO: implement initState
     super.initState();
+
+// android settings initialiizer 
+     var androidIntialize = new AndroidInitializationSettings("ic_launcher");
+
+     // IOS settings Initializer
+
+     var iOSIntialize = new IOSInitializationSettings();
+     //Initilization Settings
+
+     var initialzationSettings = new InitializationSettings(
+       android: androidIntialize , iOS: iOSIntialize
+     );
+
+     // setting up local notification
+
+     localNotification = new FlutterLocalNotificationsPlugin();
+     localNotification.initialize(initialzationSettings);
+
 databaseRef.onValue.listen((event) {
-  if(event.snapshot.value["S1"] == true ){
+  if(event.snapshot.value["S1"] == true) {
+    // calling the notification function
+    startTimer();
+    if(both == false) {
+      _shownotification();
+    }
     both = true;
-    first =  DateFormat('yyyy-MM-dd \n kk:mm:ss').format(DateTime.now()).toString();
+    first =
+        DateFormat('yyyy-MM-dd \n kk:mm:ss').format(DateTime.now()).toString();
     setState(() {
       disconnected = false;
     });
   }
-  else if(event.snapshot.value["S1"] == false && both == true){
-    both = false;
-    history.add(TimeTile(first: first ,
-        second: DateFormat('yyyy-MM-dd \n kk:mm:ss').format(DateTime.now()).toString(),
-        third:event.snapshot.value["reading"]));
-    setState(() {
-      disconnected = true;
-    });
-  }
-});
+    else if (event.snapshot.value["S1"] == false && both == true) {
+      both = false;
+      _timer.cancel();
+      cons = 9 * 4 / 36 * seconds;
+      history.add(TimeTile(first: first,
+          second: DateFormat('yyyy-MM-dd \n kk:mm:ss')
+              .format(DateTime.now())
+              .toString(),
+          third: cons.toString() + "J"));
+      setState(() {
+        disconnected = true;
+        seconds=0;
+      });
+    }
+  });
 
     /*Timer.periodic(Duration(seconds: 2), (timer) {
       fetch();
     });
 */
+  }
+
+  // Notification function
+ Future _shownotification() async {
+    var androidDetails = new AndroidNotificationDetails("channelId", "Notifier", importance: Importance.high);
+
+    var iosDetails = new IOSNotificationDetails();
+
+    var generalNotificationDetails = new NotificationDetails(android : androidDetails , iOS: iosDetails);
+    
+
+    await localNotification.show(0 , "Connected", "Connected to alternative source", generalNotificationDetails);
+
   }
 
   @override
@@ -114,25 +185,6 @@ databaseRef.onValue.listen((event) {
               showTwoGlows: true,
               repeatPauseDuration: Duration(milliseconds: 100),
               shape: BoxShape.circle,
-              child: InkWell(
-                splashColor: Colors.transparent,
-                onTap: () {
-                  if (disconnected == false) {
-                    addData(false);
-                  }
-                  else {
-                    addData(true);
-                  }
-                  /*
-                  setState(() {
-                    if (disconnected == true) {
-                      disconnected = false;
-                    }
-                    else {
-                      disconnected = true;
-                    }
-                  });*/
-                },
                 child: Material(
                   elevation: 2,
                   shape: CircleBorder(
@@ -162,7 +214,6 @@ databaseRef.onValue.listen((event) {
                     ),
                   ),
                 ),
-              ),
             ),
             SizedBox(height: screenWidth * 0.10),
             ListView.builder(
@@ -226,8 +277,14 @@ Widget upperCurvedContainer(BuildContext context) {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           _topRow(),
-          SizedBox(height: 50),
-          Text('Project Name', style: vpnStyle),
+          SizedBox(height: 30),
+          Text('Saveit', style: vpnStyle),
+          SizedBox(height: 20),
+          Text('No ctrl z in human lives', style: TextStyle(
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
+            fontSize: 20,
+          )),
         ],
       ),
     ),
